@@ -1,0 +1,19 @@
+{
+  "name": "test-cashflow",
+  "version": "1.0.0",
+  "description": "A test-cashflow",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node .",
+    "start": "bash start.sh"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^16.1.0"
+  }
+}
