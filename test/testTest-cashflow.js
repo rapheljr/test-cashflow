@@ -1,8 +1,8 @@
 const assert = require('assert');
-const { test-cashflow } = require('../src/test-cashflow.js');
+const { testCashflow } = require('../src/test-cashflow.js');
 
-describe('test-cashflow', () => {
+describe('testCashflow', () => {
   it('message', () => {
-    assert.deepStrictEqual(test-cashflow('args'), 'args');
+    assert.deepStrictEqual(testCashflow('args'), 'args');
   });
 });

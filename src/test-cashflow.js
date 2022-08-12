@@ -1,5 +1,3 @@
-const test-cashflow = function (args) {
-  return args;
-};
+const testCashflow = (args) => args;
 
-module.exports = { test-cashflow };
+module.exports = { testCashflow };
