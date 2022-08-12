@@ -1,6 +1,9 @@
 const puppeteer = require('puppeteer');
 const users = require('./users.json');
 
+const time = 2000;
+const delay = { delay: time };
+
 const visitPage = (url) => {
   return new Promise((res, rej) => {
     puppeteer.launch({ headless: false }).then(browser => {
@@ -17,7 +20,7 @@ const login = (username, password) => (page) => {
   return new Promise((res, rej) => {
     page.type('#username-input', username).then(() => {
       page.type('#password-input', password).then(() => {
-        page.click('#login-button').then(() => {
+        page.click('#login-button', delay).then(() => {
           page.waitForSelector('#host-btn');
           res(page);
         });
@@ -28,13 +31,12 @@ const login = (username, password) => (page) => {
 
 const hostGame = (page) => new Promise((res, rej) => {
   const hostButton = '#host-btn';
-  const gameId = '.game-id';
+  const gameId = '#game-id';
   page.waitForSelector(hostButton).then(() =>
-    page.click(hostButton).then(() => {
+    page.click(hostButton, delay).then(() => {
       page.waitForSelector(gameId).then(() =>
-        page.$eval(gameId, e => e.innerText).then(gameLink => {
-          console.log(gameLink);
-          res('' + 1);
+        page.$eval(gameId, element => element.innerText).then(text => {
+          res(text.split(': ')[1]);
         }))
     })).catch(err => rej(err));
 });
@@ -43,10 +45,10 @@ const joinGame = (gameId) => page => new Promise((res, rej) => {
   const joinButton = '#join-btn';
   const gameIdInput = 'input[name="gameID"]';
   page.waitForSelector(joinButton).then(() =>
-    page.click(joinButton).then(() => {
+    page.click(joinButton, delay).then(() => {
       page.waitForSelector(gameIdInput).then(() => {
         page.type(gameIdInput, gameId).then(() =>
-          page.click('input[value="Enter"]'))
+          page.click('input[value="Enter"]', delay))
           .then(() => {
             res(page)
           })
@@ -59,21 +61,23 @@ const joinGame = (gameId) => page => new Promise((res, rej) => {
 const playGame = (hostPage) => {
   const playButton = '#start-btn';
   hostPage.waitForSelector(playButton).then(() =>
-    hostPage.click(playButton, { delay: 3000 }));
+    hostPage.click(playButton, delay));
 };
 
 const loginUser = ({ username, password }) =>
   visitPage('http://localhost:8000').then(login(username, password));
 
-const startGame = ([aPage, bPage, cPage]) => {
-  hostGame(aPage).then(gameId => {
-    Promise.all([bPage, cPage].map(joinGame(gameId))).then(() =>
-      playGame(aPage));
+const startGame = ([host, ...guests]) => {
+  hostGame(host).then(gameId => {
+    Promise.all(guests.map(joinGame(gameId))).then(() =>
+      playGame(host));
   });
 };
 
-const main = () =>
-  Promise.all([users.a, users.b, users.c].map(loginUser))
+const main = () => {
+  const six = [users.a, users.b, users.c, users.d, users.e, users.f];
+  Promise.all(six.map(loginUser))
     .then(startGame);
+}
 
 main();
