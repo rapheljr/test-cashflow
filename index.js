@@ -44,12 +44,13 @@ const hostGame = (page) => new Promise((res, rej) => {
 
 const joinGame = (gameId) => page => new Promise((res, rej) => {
   const joinButton = '#join-btn';
-  const gameIdInput = 'input[name="gameID"]';
+  const inputField = '#input-game-id';
+  const enterButton = '#enter-game';
   page.waitForSelector(joinButton)
     .then(() => page.click(joinButton, delay))
-    .then(() => page.waitForSelector(gameIdInput))
-    .then(() => page.type(gameIdInput, gameId))
-    .then(() => page.click('input[value="Enter"]', delay))
+    .then(() => page.waitForSelector(inputField))
+    .then(() => page.type(inputField, gameId))
+    .then(() => page.click(enterButton, delay))
     .then(() => res(page))
     .catch(err => rej(err))
 });
@@ -64,19 +65,24 @@ const loginUser = ({ username, password }) =>
   visitPage('http://localhost:8000').then(login(username, password));
 
 const startGame = ([host, ...guests]) => {
+  const all = [host, ...guests];
   hostGame(host)
     .then(gameId => Promise.all(guests.map(joinGame(gameId)))
       .then(() => playGame(host))
+      .then(() => Promise.all(all.map(close)))
     );
 };
 
 const close = page => {
-  page.click('a')
+  const link = 'a[href="/game-board"]';
+  page.waitForSelector(link)
+    .then(() => page.click(link, delay))
 };
 
 const main = () => {
-  const players =
-    [users.a, users.b, users.c, users.d, users.e, users.f];
+  // const players =
+  //   [users.a, users.b, users.c, users.d, users.e, users.f];
+  const players = [users.a, users.b];
   Promise.all(players.map(loginUser))
     .then(startGame)
 }
