@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 const users = require('./users.json');
 
-const time = 2000;
+const time = 0;
 const delay = { delay: time };
 const size = {
   width: 1790,
