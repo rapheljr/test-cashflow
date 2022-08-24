@@ -1,7 +1,8 @@
 const puppeteer = require('puppeteer');
 const users = require('./users.json');
 
-const time = 0;
+const time = 100;
+
 const delay = { delay: time };
 const size = {
   width: 1790,
@@ -26,6 +27,16 @@ const login = (username, password) => (page) => {
     page.type('#username-input', username)
       .then(() => page.type('#password-input', password))
       .then(() => page.click('#login-button', delay))
+      .then(() => page.waitForSelector('#host-btn'));
+    res(page);
+  });
+};
+
+const register = (username, password) => (page) => {
+  return new Promise((res, rej) => {
+    page.type('#username-input', username)
+      .then(() => page.type('#password-input', password))
+      .then(() => page.click('#register-button', delay))
       .then(() => page.waitForSelector('#host-btn'));
     res(page);
   });
@@ -79,12 +90,11 @@ const close = page => {
     .then(() => page.click(link, delay))
 };
 
-const main = () => {
-  // const players =
-  //   [users.a, users.b, users.c, users.d, users.e, users.f];
-  const players = [users.a, users.b];
+const main = (numberOfPlayers = 2) => {
+  const players = Object.values(users).slice(0, numberOfPlayers);
   Promise.all(players.map(loginUser))
     .then(startGame)
 }
 
-main();
+const numberOfPlayers = process.argv[2];
+main(numberOfPlayers);
