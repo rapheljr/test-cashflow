@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 const users = require('./users.json');
 
-const time = 100;
+const time = 500;
 
 const delay = { delay: time };
 const size = {
@@ -73,7 +73,10 @@ const playGame = (hostPage) => {
 };
 
 const loginUser = ({ username, password }) =>
-  visitPage('http://localhost:8000').then(login(username, password));
+  // visitPage('https://cashflow-holmes-dev.herokuapp.com/register').then(register(username, password));
+  // visitPage('https://cashflow-holmes-dev.herokuapp.com/login').then(login(username, password));
+  visitPage('http://localhost:8000/login').then(login(username, password));
+// visitPage('http://localhost:8000/register').then(register(username, password));
 
 const startGame = ([host, ...guests]) => {
   const all = [host, ...guests];
